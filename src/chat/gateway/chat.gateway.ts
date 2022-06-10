@@ -27,12 +27,12 @@ export class ChatGateway
 
   @WebSocketServer() server: Server;
 
-  // @SubscribeMessage('sendMessage')
-  //   handleSendMessage(@ConnectedSocket() client: any, payload: Message) {
-  //   console.log('payload   ' + payload.text);
-  //    this.chatService.createMessage(payload);
-  //   this.server.emit('recMessage', payload);
-  // }
+  @SubscribeMessage('sendMessage')
+    handleSendMessage(@ConnectedSocket() client: any, payload: Message) {
+    console.log('payload   ' + payload.text);
+     this.chatService.createMessage(payload);
+    this.server.emit('recMessage', payload);
+  }
 
   afterInit(server: Server) {
     console.log(server);

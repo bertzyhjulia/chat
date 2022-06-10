@@ -21,19 +21,7 @@ getMessages();
 //When a user press the enter key,send message.
 msgBox.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
-    socket.on('connect', function () {
-      console.log('Connected');
-
-      socket.emit('events', { test: 'test' });
-      socket.emit('identity', 0, (response) =>
-        console.log('Identity:', response),
-      );
-    });
-    socket.on('events', function (data) {
-      console.log('event', data);
-    });
-
-    //sendMessage({ email: email.value, text: e.target.value });
+    sendMessage({ email: email.value, text: e.target.value });
     e.target.value = '';
   }
 });
