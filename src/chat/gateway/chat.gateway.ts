@@ -1,17 +1,13 @@
 import {
-  ConnectedSocket,
-  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
   OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  WsResponse,
 } from '@nestjs/websockets';
 import { Socket } from 'dgram';
 import { Server } from 'http';
-import { from, map, Observable } from 'rxjs';
 import { Message } from '../model/message.entity';
 import { ChatService } from '../service/chat.service';
 
@@ -28,9 +24,9 @@ export class ChatGateway
   @WebSocketServer() server: Server;
 
   @SubscribeMessage('sendMessage')
-    handleSendMessage(@ConnectedSocket() client: any, payload: Message) {
+  handleSendMessage(payload: Message) {
     console.log('payload   ' + payload.text);
-     this.chatService.createMessage(payload);
+    this.chatService.createMessage(payload);
     this.server.emit('recMessage', payload);
   }
 
