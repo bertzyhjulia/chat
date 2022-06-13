@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   Render,
   Request,
@@ -26,17 +27,28 @@ export class ChatController {
     return;
   }
 
-  @Get('/api/chat')
-  async Chat(@Res() res) {
-    const messages = await this.chatService.getMessages();
-    res.json(messages);
+  @UseGuards(JwtAuthGuard)
+  @Post('create/chat/:id')
+  async create(
+    @Body() message: Message,
+    @Request() req,
+    @Param('id') id: number,
+  ) {
+    message.user_id = req.user.id;
+    message.reciever_id = id;
+    return this.chatService.createMessage(message);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('create/chat')
-  async create(@Body() message: Message, @Request() req, id: number) {
-    //message.friend = this.userService.findfriend(id);
-    message.user = req.user.id;
-    return this.chatService.createMessage(message);
+  @Get('get/chat/:reciever_id')
+  async getMessages(@Request() req, @Param('reciever_id') reciever_id: number) {
+    console.log('req   ' + req.user);
+    return this.chatService.getMessages(req.user, reciever_id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('get/chat')
+  async getFriends(@Request() req) {
+    return this.userService.findAll(req.user.id);
   }
 }

@@ -73,7 +73,7 @@ export class UserController {
 
   @Get('')
   findAllUser() {
-    return this.userService.findAll();
+    return this.userService.findAll(2);
   }
 
   @UseGuards(JwtAuthGuard)

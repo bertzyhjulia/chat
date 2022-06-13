@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { from, map, Observable, switchMap } from 'rxjs';
 import { AuthService } from 'src/auth/auth.service';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { UserEntity } from './model/user.entity';
 import { CreateUserDto, EditUserDto, LoginUserDto } from './user.dto';
 
@@ -142,7 +142,11 @@ export class UserService {
     return await this.userRepository.delete(id);
   }
   //-------------------------------------------------------------------------
-  findAll() {
-    return this.userRepository.find();
+  findAll(id: number) {
+    return this.userRepository.find({
+      where: {
+        id: Not(id),
+      },
+    });
   }
 }

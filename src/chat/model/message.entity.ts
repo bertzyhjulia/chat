@@ -1,5 +1,4 @@
 import { UserEntity } from 'src/user/model/user.entity';
-import { UserI } from 'src/user/model/user.interface';
 import {
   Entity,
   Column,
@@ -13,15 +12,15 @@ export class Message {
   @PrimaryGeneratedColumn('uuid')
   id: number;
 
-  @Column({ unique: true })
+  @Column()
   text: string;
+
+  @Column()
+  reciever_id: number;
 
   @CreateDateColumn()
   createdAt: Date;
 
-  // @Column()
-  // friend: UserI;
-
   @ManyToOne(() => UserEntity, (user) => user.id)
-  user: UserEntity;
+  user_id: UserEntity;
 }
