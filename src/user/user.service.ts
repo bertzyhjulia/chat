@@ -60,10 +60,10 @@ export class UserService {
   findOne(id: number): Observable<UserEntity> {
     return from(this.userRepository.findOneBy({ id }));
   }
-
-  findfriend(id: number) {
+  findOneFiend(id: number) {
     return this.userRepository.findOneBy({ id });
   }
+
   findUserByEmail(email: string): Observable<UserEntity> {
     //return from(this.userRepository.findOneBy({ email }));
     return from(
@@ -82,18 +82,16 @@ export class UserService {
       }),
     );
   }
-  //---------------------------------------------------------------------------------------
-  create(createdUserDto: CreateUserDto, img: string) {
-    createdUserDto.avatar = img;
-    const userEntity = this.userRepository.create(createdUserDto);
-    return this.nickNameExists(userEntity.nickName).pipe(
+
+  create(createdUserDto: CreateUserDto) {
+    const user = this.userRepository.create(createdUserDto);
+    return this.nickNameExists(user.nickName).pipe(
       switchMap((exists: boolean) => {
         if (!exists) {
-          return this.authService.hashPassword(userEntity.password).pipe(
+          return this.authService.hashPassword(user.password).pipe(
             switchMap((passwordHash: string) => {
-              userEntity.password = passwordHash;
-
-              return from(this.userRepository.save(userEntity)).pipe(
+              user.password = passwordHash;
+              return from(this.userRepository.save(user)).pipe(
                 map((savedUser: UserEntity) => {
                   const { password, ...user } = savedUser;
                   return user;
@@ -110,7 +108,6 @@ export class UserService {
 
   private nickNameExists(nickName: string): Observable<boolean> {
     nickName = nickName.toLowerCase();
-    console.log(nickName);
     return from(this.userRepository.findOneBy({ nickName })).pipe(
       map((user: UserEntity) => {
         console.log(user);
@@ -143,10 +140,14 @@ export class UserService {
   }
   //-------------------------------------------------------------------------
   findAll(id: number) {
-    return this.userRepository.find({
-      where: {
-        id: Not(id),
-      },
-    });
+    return this.userRepository
+      .find({
+        where: {
+          id: Not(id),
+        },
+      })
+      .then((res) => {
+        return res;
+      });
   }
 }

@@ -26,7 +26,7 @@ import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 
 export const storage = {
   storage: diskStorage({
-    destination: 'dist/uploads/profileimagies',
+    destination: '/dist/uploads/profileimagies',
     filename: (req, file, cb) => {
       const filename: string =
         path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();
@@ -40,20 +40,21 @@ export const storage = {
 export class UserController {
   constructor(private userService: UserService) {}
 
-  // Rest Call: POST http://localhost:3002/users/
   @Post('clientAdd')
   @UseInterceptors(FileInterceptor('avatar', storage))
   async uploadFile(
     @Body() createDto: CreateUserDto,
     @UploadedFile() avatar: Express.Multer.File,
   ) {
-    const img = avatar.filename;
-    return await this.userService.create(createDto, img);
+    createDto.avatar = avatar.filename;
+    //console.log('createDto   ' + createDto)
+    return this.userService.create(createDto);
   }
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Body() req: LoginUserDto) {
+    console.log('req   ' + req.email);
     return this.userService.logIn(req).pipe(
       map((jwt: string) => {
         return {
@@ -68,7 +69,13 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get('/profile')
   findAll(@Request() req) {
-    return req.user;
+    const user = req.user;
+    return this.userService.findAll(user.id).then((friends) => {
+      return {
+        user,
+        friends,
+      };
+    });
   }
 
   @Get('')

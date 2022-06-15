@@ -3,7 +3,7 @@ export interface UserI {
   name: string;
   lastName: string;
   tel: number;
-  date: Date;
+  //registerDate: Date;
   avatar: string;
   email: string;
   nickName: string;

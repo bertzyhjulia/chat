@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from 'src/user/model/user.entity';
 import { Repository } from 'typeorm';
 import { Message } from '../model/message.entity';
 
@@ -13,16 +12,20 @@ export class ChatService {
     return await this.chatRepository.save(chat);
   }
 
-  async getMessages(
-    current_user: UserEntity,
-    reciever_id: number,
-  ): Promise<Message[]> {
+  getMessages(current_user: number, reciever_id: number): Promise<Message[]> {
     console.log(current_user);
-    return await this.chatRepository.find({
-      where: {
-        current_user.id,
-        reciever_id,
-      },
-    });
+    console.log(reciever_id);
+    //current_user = current_user.id
+    return this.chatRepository
+      .createQueryBuilder('u')
+      .where(
+        ' u.user_id = :current_user And u.reciever_id = :reciever_id Or u.user_id = :reciever_id And u.reciever_id = :current_user',
+        {
+          current_user: current_user,
+          reciever_id: reciever_id,
+        },
+      )
+      .orderBy('u.createdAt', 'DESC')
+      .getMany();
   }
 }

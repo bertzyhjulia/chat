@@ -2,6 +2,7 @@ import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export class LoginUserDto {
   @IsEmail()
+  @IsNotEmpty()
   email: string;
 
   @IsNotEmpty()
@@ -23,6 +24,5 @@ export class CreateUserDto extends LoginUserDto {
   name: string;
   lastName: string;
   tel: number;
-  date: Date;
   avatar: string;
 }

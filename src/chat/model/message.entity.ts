@@ -9,11 +9,8 @@ import {
 
 @Entity()
 export class Message {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn('increment')
   id: number;
-
-  @Column()
-  text: string;
 
   @Column()
   reciever_id: number;
@@ -23,4 +20,7 @@ export class Message {
 
   @ManyToOne(() => UserEntity, (user) => user.id)
   user_id: UserEntity;
+
+  @Column()
+  text: string;
 }

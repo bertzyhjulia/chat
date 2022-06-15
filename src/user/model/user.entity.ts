@@ -1,8 +1,10 @@
+import { IsOptional } from 'class-validator';
 import { Message } from 'src/chat/model/message.entity';
 import {
   BeforeInsert,
   BeforeUpdate,
   Column,
+  CreateDateColumn,
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -13,11 +15,11 @@ export class UserEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  name: string;
-
   @Column({ nullable: true })
   email: string;
+
+  @Column()
+  name: string;
 
   @Column()
   nickName: string;
@@ -37,7 +39,11 @@ export class UserEntity {
   tel: number;
 
   @Column()
+  @IsOptional()
   avatar: string;
+
+  @CreateDateColumn()
+  registerDate: Date;
 
   @OneToMany(() => Message, (message) => message.id)
   message: Message[];

@@ -1,0 +1,31 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "dev",
+			"path": "backend/",
+			"problemMatcher": [],
+			"label": "npm: dev - backend",
+			"detail": "nest start --watch"
+		},
+		{
+			"type": "npm",
+			"script": "build",
+			"path": "backend/",
+			"group": "build",
+			"problemMatcher": [],
+			"label": "npm: build - backend",
+			"detail": "nest build"
+		},
+		{
+			"type": "npm",
+			"script": "debug",
+			"path": "backend/",
+			"group": "rebuild",
+			"problemMatcher": [],
+			"label": "npm: debug - backend",
+			"detail": "nodemon --inspect ./bin/www"
+		}
+	]
+}
