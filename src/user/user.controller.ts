@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -26,7 +27,7 @@ import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 
 export const storage = {
   storage: diskStorage({
-    destination: '/dist/uploads/profileimagies',
+    destination: './uploads/profileimagies',
     filename: (req, file, cb) => {
       const filename: string =
         path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();
@@ -47,6 +48,7 @@ export class UserController {
     @UploadedFile() avatar: Express.Multer.File,
   ) {
     createDto.avatar = avatar.filename;
+    createDto.avatar_original_name = avatar.originalname;
     //console.log('createDto   ' + createDto)
     return this.userService.create(createDto);
   }
@@ -111,5 +113,14 @@ export class UserController {
         join(process.cwd(), 'dist/uploads/profileimagies/' + imagename),
       ),
     );
+  }
+
+  @Get(':imagename')
+  getImage(@Param('imagename') image, @Res() res) {
+    const response = res.sendFile(image, { root: './uploads/profileimagies' });
+    return {
+      status: HttpStatus.OK,
+      data: response,
+    };
   }
 }

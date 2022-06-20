@@ -6,7 +6,9 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -32,6 +34,7 @@ export class UserEntity {
   emailToLowerCase() {
     this.email = this.email.toLowerCase();
   }
+
   @Column()
   lastName: string;
 
@@ -39,8 +42,19 @@ export class UserEntity {
   tel: number;
 
   @Column()
-  @IsOptional()
   avatar: string;
+
+  @Column()
+  avatar_original_name: string;
+
+  // @JoinColumn({ name: 'avatarId' })
+  // @OneToOne(() => DatabaseFile, {
+  //   nullable: true,
+  // })
+  // public avatar?: DatabaseFile;
+
+  // @Column({ nullable: true })
+  // public avatarId?: number;
 
   @CreateDateColumn()
   registerDate: Date;

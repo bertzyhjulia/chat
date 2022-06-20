@@ -13,6 +13,21 @@ export class UserService {
     private userRepository: Repository<UserEntity>,
     private authService: AuthService,
   ) {}
+  // async addAvatar(
+  //   createdUserDto: CreateUserDto,
+  //   imageBuffer: string,
+  //   filename: string,
+  // ) {
+  //   const avatar = await this.databaseFilesService.uploadDatabaseFile(
+  //     imageBuffer,
+  //     filename,
+  //   );
+  //   const user = await this.userRepository.create(createdUserDto);
+  //   await this.userRepository.update(user.id, {
+  //     avatarId: avatar.id,
+  //   });
+  //   return avatar;
+  // }
   //-------------------------------------------------------------------------------
   logIn(loginUserDto: LoginUserDto): Observable<string> {
     return this.findUserByEmail(loginUserDto.email).pipe(
@@ -65,7 +80,6 @@ export class UserService {
   }
 
   findUserByEmail(email: string): Observable<UserEntity> {
-    //return from(this.userRepository.findOneBy({ email }));
     return from(
       this.userRepository.findOne({
         select: [
@@ -119,7 +133,6 @@ export class UserService {
       }),
     );
   }
-  // ----------------------------------------------------------------------------
   edit(id: number, edit: EditUserDto, img: string) {
     return this.findOne(id).pipe(
       map((user: UserEntity) => {
@@ -127,7 +140,7 @@ export class UserService {
         user.name = edit.name;
         user.lastName = edit.lastName;
         if (img) {
-          user.avatar = img;
+          //user.avatar = img;
           return this.userRepository.save(user);
         }
         return this.userRepository.save(user);
