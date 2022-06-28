@@ -7,9 +7,6 @@ export class LoginUserDto {
 
   @IsNotEmpty()
   password: string;
-
-  @IsNotEmpty()
-  nickName: string;
 }
 
 export class EditUserDto {
@@ -29,10 +26,15 @@ export class CreateUserDto extends LoginUserDto {
 
   @IsString()
   lastName: string;
+
   @IsString()
-  avatar: string;
+  nickName: string;
+
   @IsString()
-  avatar_original_name: string;
+  avatar?: string;
+
+  @IsString()
+  avatar_original_name?: string;
 
   @IsNumber()
   tel: number;

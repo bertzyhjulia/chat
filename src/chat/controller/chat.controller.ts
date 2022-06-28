@@ -1,78 +1,63 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
-  HttpException,
-  HttpStatus,
   Param,
+  Patch,
   Post,
-  Render,
   Request,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
-import { UserService } from 'src/user/user.service';
-import { Message } from '../model/message.entity';
+import { CreateChatDto, UpdateChatDto } from '../model/dto/createChat.dto';
 import { ChatService } from '../service/chat.service';
 
-@Controller('')
+@Controller('chat')
 export class ChatController {
-  constructor(
-    private readonly chatService: ChatService,
-    private readonly userService: UserService,
-  ) {}
-
-  @Get('/chat')
-  @Render('index')
-  Home() {
-    return;
-  }
+  constructor(private readonly chatService: ChatService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Post('create/chat')
-  async create(@Body() message: Message, @Request() req) {
-    message.user_id = req.user;
-    console.log('chat.reciever_id   ' + message.reciever_id);
-    console.log('chat.user_id.id   ' + message.user_id.id);
-    const friendIsExist = this.userService.findOneFiend(message.reciever_id);
-    friendIsExist.then((reciever) => {
-      console.log('res   ' + reciever.id);
-      if (!reciever) {
-        console.log('exeption');
-        throw new HttpException(
-          'Reciever doesnt exist: change reciever',
-          HttpStatus.BAD_REQUEST,
-        );
-      } else if (message.user_id.id == reciever.id) {
-        console.log('exeption');
-        throw new HttpException(
-          'Send message yourself: change reciever',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-    });
-    return this.chatService.createMessage(message);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('get/chat/:reciever_id')
-  async getMessages(@Request() req, @Param('reciever_id') reciever_id: number) {
-    console.log('req   ' + req.user.id);
-    const friendIsExist = this.userService.findOne(reciever_id);
-    if (!friendIsExist) {
-      console.log('exeption');
-      throw new HttpException(
-        'Reciever doesnt exist: change reciever',
-        HttpStatus.BAD_REQUEST,
-      );
+  @Post('/create')
+  async createRoom(@Body() dto: CreateChatDto, @Request() req) {
+    if (dto.is_individual == true) {
+      dto.logo = '';
+      dto.title = '';
+      dto.admin_id = 0;
+    } else if (
+      dto.is_individual == false &&
+      (dto.title == null ||
+        dto.title == undefined ||
+        dto.logo == null ||
+        dto.logo == undefined)
+    ) {
+      dto.logo = 'group';
+      dto.title = '';
+      dto.admin_id = req.user.id;
     }
-    const current_user = req.user.id;
-    return this.chatService.getMessages(current_user, reciever_id);
+    return this.chatService.create(dto);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('get/chat')
-  async getFriends(@Request() req) {
-    return this.userService.findAll(req.user.id);
+  @Patch('/update/:id')
+  async update(@Param('id') id: number, @Body() dto: UpdateChatDto) {
+    return this.chatService.update(id, dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/:id')
+  getWhereUserId(@Param('id') id: number) {
+    return this.chatService.getAllWhereUserId(id);
+  }
+
+  @Get('')
+  get() {
+    return this.chatService.getAll();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('delete/:id')
+  delete(@Param('id') id: number) {
+    return this.chatService.delete(id);
   }
 }

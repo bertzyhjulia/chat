@@ -99,7 +99,7 @@ export class UserService {
 
   create(createdUserDto: CreateUserDto) {
     const user = this.userRepository.create(createdUserDto);
-    return this.nickNameExists(user.nickName).pipe(
+    return this.emailExists(user.email).pipe(
       switchMap((exists: boolean) => {
         if (!exists) {
           return this.authService.hashPassword(user.password).pipe(
@@ -120,9 +120,9 @@ export class UserService {
     );
   }
 
-  private nickNameExists(nickName: string): Observable<boolean> {
-    nickName = nickName.toLowerCase();
-    return from(this.userRepository.findOneBy({ nickName })).pipe(
+  private emailExists(email: string): Observable<boolean> {
+    email = email.toLowerCase();
+    return from(this.userRepository.findOneBy({ email })).pipe(
       map((user: UserEntity) => {
         console.log(user);
         if (user) {
@@ -133,6 +133,7 @@ export class UserService {
       }),
     );
   }
+
   edit(id: number, edit: EditUserDto, img: string) {
     return this.findOne(id).pipe(
       map((user: UserEntity) => {

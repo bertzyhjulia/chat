@@ -1,4 +1,3 @@
-import { IsOptional } from 'class-validator';
 import { Message } from 'src/chat/model/message.entity';
 import {
   BeforeInsert,
@@ -6,11 +5,10 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { ChatUserEntity } from 'src/chat/model/chat_user.entity';
 
 @Entity()
 export class UserEntity {
@@ -47,18 +45,12 @@ export class UserEntity {
   @Column()
   avatar_original_name: string;
 
-  // @JoinColumn({ name: 'avatarId' })
-  // @OneToOne(() => DatabaseFile, {
-  //   nullable: true,
-  // })
-  // public avatar?: DatabaseFile;
-
-  // @Column({ nullable: true })
-  // public avatarId?: number;
-
   @CreateDateColumn()
   registerDate: Date;
 
-  @OneToMany(() => Message, (message) => message.id)
+  @OneToMany(() => Message, (message) => message.user_id)
   message: Message[];
+
+  @OneToMany(() => ChatUserEntity, (chatU) => chatU.user_id)
+  chatU: ChatUserEntity[];
 }

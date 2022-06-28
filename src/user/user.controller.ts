@@ -47,9 +47,15 @@ export class UserController {
     @Body() createDto: CreateUserDto,
     @UploadedFile() avatar: Express.Multer.File,
   ) {
-    createDto.avatar = avatar.filename;
-    createDto.avatar_original_name = avatar.originalname;
-    //console.log('createDto   ' + createDto)
+    console.log(avatar);
+    if (avatar == null || avatar == undefined) {
+      createDto.avatar = '';
+      createDto.avatar_original_name = '';
+    } else {
+      console.log('createDto.avatar = !null;');
+      createDto.avatar = avatar.filename;
+      createDto.avatar_original_name = avatar.originalname;
+    }
     return this.userService.create(createDto);
   }
 
