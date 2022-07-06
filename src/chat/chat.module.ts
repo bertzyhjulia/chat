@@ -17,7 +17,10 @@ import { ReactionController } from './controller/reaction.controller';
 import { ReadMessageController } from './controller/readMessage.controller';
 import { ReadMessageService } from './service/read_message.service';
 import { ReadMessageEntity } from './model/read_message.entity';
-import { CaslAbilityFactory } from 'src/casl/casl-ability.factory';
+import { CaslModule } from 'src/casl/casl.module';
+import { forwardRef } from '@nestjs/common';
+import { AbilityService } from 'src/casl/service/ability.service';
+import { ActionEntity } from 'src/casl/model/action.entity';
 
 @Module({
   imports: [
@@ -28,8 +31,10 @@ import { CaslAbilityFactory } from 'src/casl/casl-ability.factory';
       ChatUserEntity,
       ReactionsEntity,
       ReadMessageEntity,
+      ActionEntity,
     ]),
     UserModule,
+    forwardRef(() => CaslModule),
   ],
   providers: [
     MessageService,
@@ -37,7 +42,7 @@ import { CaslAbilityFactory } from 'src/casl/casl-ability.factory';
     ChatUserService,
     ReactionService,
     ReadMessageService,
-    CaslAbilityFactory,
+    AbilityService,
   ],
   controllers: [
     MessageController,
@@ -46,6 +51,6 @@ import { CaslAbilityFactory } from 'src/casl/casl-ability.factory';
     ReactionController,
     ReadMessageController,
   ],
-  exports: [ChatUserService],
+  exports: [ChatUserService, ChatService, MessageService],
 })
 export class ChatModule {}

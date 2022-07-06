@@ -7,7 +7,6 @@ import {
 } from '@casl/ability';
 import { Injectable } from '@nestjs/common';
 import { ChatUserEntity } from 'src/chat/model/chat_user.entity';
-import { ActionEntity } from './model/action.entity';
 import { Action } from './model/action.enum';
 import { AbilityService } from './service/ability.service';
 
@@ -21,24 +20,25 @@ export class CaslAbilityFactory {
     const { can, cannot, build } = new AbilityBuilder(
       Ability as AbilityClass<AppAbility>,
     );
-    console.log('chat_user.chat_id   ' + chat_user.chat_id);
-    //const actionMessage = this.abilityService.findOne(chat_user.chat_id);
     if (chat_user.role == 'admin') {
       can(Action.Manage, 'all');
     } else {
-      can(Action.Read, ChatUserEntity).because('test');
-      if ('this.action.CREATE_MESSAGE') {
-        can(Action.Create, ChatUserEntity);
-        can(Action.Update, ChatUserEntity, {
-          user_id: { $ne: chat_user.user_id },
-        });
-        can(Action.Delete, ChatUserEntity, {
-          user_id: { $ne: chat_user.user_id },
-        });
-      } else {
-        cannot(Action.Create, ChatUserEntity);
-        cannot(Action.Update, ChatUserEntity);
-        cannot(Action.Delete, ChatUserEntity);
+      can(Action.Read, ChatUserEntity);
+      can(Action.Create, ChatUserEntity);
+      can(Action.Update, ChatUserEntity, {
+        user_id: { $ne: chat_user.user_id },
+      });
+      can(Action.Delete, ChatUserEntity, {
+        user_id: { $ne: chat_user.user_id },
+      });
+      can(Action.UPDATE_GROUP_DATA, ChatUserEntity);
+      cannot(Action.BAN, ChatUserEntity).because('only admin');
+      if (chat_user.ban == true) {
+        cannot(Action.Read, ChatUserEntity).because('ban');
+        cannot(Action.Create, ChatUserEntity).because('ban');
+        cannot(Action.Update, ChatUserEntity).because('ban');
+        cannot(Action.Delete, ChatUserEntity).because('ban');
+        cannot(Action.UPDATE_GROUP_DATA, ChatUserEntity).because('ban');
       }
     }
 

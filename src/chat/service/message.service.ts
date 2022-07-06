@@ -1,19 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CaslAbilityFactory } from 'src/casl/casl-ability.factory';
+import { AbilityService } from 'src/casl/service/ability.service';
 import { Repository } from 'typeorm';
 import {
   CreateMessageDto,
   UpdateMessageDto,
 } from '../model/dto/createMessage.dto';
 import { Message } from '../model/message.entity';
-import { ChatService } from './chat.service';
+import { ChatUserService } from './chat_user.service';
 
 @Injectable()
 export class MessageService {
   constructor(
     @InjectRepository(Message)
     private messageRepository: Repository<Message>,
-    private chatService: ChatService,
+    private chatUserService: ChatUserService,
+    private abilityService: AbilityService,
+    private abilityFactory: CaslAbilityFactory,
   ) {}
   async createMessage(dto: CreateMessageDto): Promise<Message> {
     return await this.messageRepository.save(
@@ -41,5 +45,9 @@ export class MessageService {
       .where('u.chat_id.id = :id', { id })
       .orderBy('u.createdAt', 'DESC')
       .getMany();
+  }
+
+  async delete(id: number) {
+    return this.messageRepository.delete(id);
   }
 }

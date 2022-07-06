@@ -10,37 +10,31 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+import { AbilityService } from 'src/casl/service/ability.service';
 import { CreateChatDto, UpdateChatDto } from '../model/dto/createChat.dto';
 import { ChatService } from '../service/chat.service';
 
 @Controller('chat')
 export class ChatController {
-  constructor(private readonly chatService: ChatService) {}
+  constructor(
+    private readonly chatService: ChatService,
+    private readonly adilityService: AbilityService,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Post('/create')
   async createRoom(@Body() dto: CreateChatDto, @Request() req) {
-    if (dto.is_individual == true) {
-      dto.logo = '';
-      dto.title = '';
-      dto.admin_id = 0;
-    } else if (
-      dto.is_individual == false &&
-      (dto.title == null ||
-        dto.title == undefined ||
-        dto.logo == null ||
-        dto.logo == undefined)
-    ) {
-      dto.logo = 'group';
-      dto.title = '';
-      dto.admin_id = req.user.id;
-    }
-    return this.chatService.create(dto);
+    return this.chatService.create(dto, req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Patch('/update/:id')
-  async update(@Param('id') id: number, @Body() dto: UpdateChatDto) {
+  async update(
+    @Param('id') id: number,
+    @Body() dto: UpdateChatDto,
+    @Request() req,
+  ) {
+    await this.adilityService.getAllowsForUpdate(id, dto, req.user.id);
     return this.chatService.update(id, dto);
   }
 

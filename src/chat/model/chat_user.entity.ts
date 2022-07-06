@@ -16,6 +16,9 @@ export class ChatUserEntity {
   @Column()
   role: string;
 
+  @Column({ default: false })
+  ban: boolean;
+
   @ManyToOne(() => UserEntity, (user) => user.id)
   user_id: UserEntity;
 

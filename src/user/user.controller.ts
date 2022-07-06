@@ -47,12 +47,10 @@ export class UserController {
     @Body() createDto: CreateUserDto,
     @UploadedFile() avatar: Express.Multer.File,
   ) {
-    console.log(avatar);
     if (avatar == null || avatar == undefined) {
       createDto.avatar = '';
       createDto.avatar_original_name = '';
     } else {
-      console.log('createDto.avatar = !null;');
       createDto.avatar = avatar.filename;
       createDto.avatar_original_name = avatar.originalname;
     }
@@ -62,7 +60,6 @@ export class UserController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Body() req: LoginUserDto) {
-    console.log('req   ' + req.email);
     return this.userService.logIn(req).pipe(
       map((jwt: string) => {
         return {

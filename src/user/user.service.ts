@@ -33,9 +33,6 @@ export class UserService {
     return this.findUserByEmail(loginUserDto.email).pipe(
       switchMap((user: UserEntity) => {
         if (user) {
-          console.log(user);
-          console.log('loginUserDto.password   ' + loginUserDto.password);
-          console.log(' user.password   ' + user.password);
           return this.validatePassword(
             loginUserDto.password,
             user.password,
@@ -124,7 +121,6 @@ export class UserService {
     email = email.toLowerCase();
     return from(this.userRepository.findOneBy({ email })).pipe(
       map((user: UserEntity) => {
-        console.log(user);
         if (user) {
           return true;
         } else {
@@ -137,7 +133,6 @@ export class UserService {
   edit(id: number, edit: EditUserDto, img: string) {
     return this.findOne(id).pipe(
       map((user: UserEntity) => {
-        console.log(user);
         user.name = edit.name;
         user.lastName = edit.lastName;
         if (img) {

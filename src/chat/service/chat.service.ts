@@ -11,9 +11,25 @@ export class ChatService {
     readonly chatRepository: Repository<ChatEntity>,
   ) {}
 
-  async create(dto: CreateChatDto) {
+  async create(dto: CreateChatDto, idUser: number) {
+    if (dto.is_individual == true) {
+      dto.logo = '';
+      dto.title = '';
+      dto.admin_id = 0;
+    } else if (
+      dto.is_individual == false &&
+      (dto.title == null ||
+        dto.title == undefined ||
+        dto.logo == null ||
+        dto.logo == undefined)
+    ) {
+      dto.logo = 'group';
+      dto.title = '';
+      dto.admin_id = idUser;
+    }
     return this.chatRepository.save(await this.chatRepository.create(dto));
   }
+
   async update(id: number, dto: UpdateChatDto) {
     const chat = await this.findOne(id);
     chat.admin_id = dto.admin_id;
@@ -31,7 +47,6 @@ export class ChatService {
       .createQueryBuilder('chat')
       .leftJoinAndSelect('chat.chatU', 'chat_user')
       .where('chat_user.chat_id = :id', { id });
-    console.log(query);
     const chatUsers = query.getMany();
     return chatUsers;
   }

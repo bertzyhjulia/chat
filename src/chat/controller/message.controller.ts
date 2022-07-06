@@ -1,7 +1,7 @@
+import { Delete } from '@nestjs/common';
 import {
   Body,
   Controller,
-  ForbiddenException,
   Get,
   Param,
   Patch,
@@ -11,15 +11,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
-import { CaslAbilityFactory } from 'src/casl/casl-ability.factory';
-import { Action } from 'src/casl/model/action.enum';
+import { AbilityService } from 'src/casl/service/ability.service';
 import { UserService } from 'src/user/user.service';
-import { ChatUserEntity } from '../model/chat_user.entity';
 import {
   CreateMessageDto,
   UpdateMessageDto,
 } from '../model/dto/createMessage.dto';
-import { ChatUserService } from '../service/chat_user.service';
 import { MessageService } from '../service/message.service';
 
 @Controller('message')
@@ -27,8 +24,7 @@ export class MessageController {
   constructor(
     private readonly messageService: MessageService,
     private readonly userService: UserService,
-    private readonly chatUserService: ChatUserService,
-    private readonly abilityFactory: CaslAbilityFactory,
+    private readonly adilityService: AbilityService,
   ) {}
 
   @Get('')
@@ -40,35 +36,35 @@ export class MessageController {
   @UseGuards(JwtAuthGuard)
   @Post('create')
   async create(@Body() dto: CreateMessageDto, @Request() req) {
-    const idChat = dto.chat_id;
-    console.log('idChat   ' + Number(idChat));
-    const chat_user = await this.chatUserService.findOne(
-      Number(idChat),
-      req.user.id,
-    );
-    const ability = await this.abilityFactory.defineAbility(chat_user);
-    const isAllowed = ability.can(Action.Read, ChatUserEntity);
-    if (!isAllowed) {
-      throw new ForbiddenException('only admin');
-    }
+    await this.adilityService.getAllowsForCreate(dto, req.user.id);
     return this.messageService.createMessage(dto);
   }
 
   @UseGuards(JwtAuthGuard)
+  @Delete('delete/:id/:idchat')
+  async delete(
+    @Param('id') id: number,
+    @Param('idchat') idchat: number,
+    @Request() req,
+  ) {
+    await this.adilityService.getAllowsForDelete(idchat, req.user.id);
+    return this.messageService.delete(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Patch('update/:id')
-  async update(@Param('id') id: number, @Body() dto: UpdateMessageDto) {
+  async update(
+    @Param('id') id: number,
+    @Body() dto: UpdateMessageDto,
+    @Request() req,
+  ) {
+    await this.adilityService.getAllowsForUpdateMessage(dto, req.user.id);
     return this.messageService.updateMessage(id, dto);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('get/:idChat')
-  async getMessages(@Param('idChat') idChat: number, @Request() req) {
-    const chat_user = await this.chatUserService.findOne(idChat, req.user.id);
-    const ability = await this.abilityFactory.defineAbility(chat_user);
-    const isAllowed = ability.can(Action.Read, ChatUserEntity);
-    if (!isAllowed) {
-      throw new ForbiddenException('only admin');
-    }
+  async getMessages(@Param('idChat') idChat: number) {
     return this.messageService.getMessages(idChat);
   }
 
