@@ -5,6 +5,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { CaslModule } from './casl/casl.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { CaslModule } from './casl/casl.module';
     }),
     CaslModule,
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [],
 })
 export class AppModule {}

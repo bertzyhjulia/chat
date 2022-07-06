@@ -1,10 +1,12 @@
 import { ForbiddenException } from '@nestjs/common';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
 import { ChatUserEntity } from '../model/chat_user.entity';
 import {
   CreateChatUserDto,
+  CreateChatUserFirstDto,
   UpdateChatUserDto,
 } from '../model/dto/createChatUser.dto';
 import { ChatService } from './chat.service';
@@ -15,6 +17,7 @@ export class ChatUserService {
     @InjectRepository(ChatUserEntity)
     readonly chatUserRepositiry: Repository<ChatUserEntity>,
     readonly chatService: ChatService,
+    readonly userService: UserService,
   ) {}
 
   async create(dto: CreateChatUserDto) {
@@ -37,6 +40,19 @@ export class ChatUserService {
     }
     return this.chatUserRepositiry.save(
       await this.chatUserRepositiry.create(dto),
+    );
+  }
+
+  async createFirst(dto: CreateChatUserFirstDto, is_individual: boolean) {
+    let saveDto: CreateChatUserDto;
+    if (is_individual == true) {
+      return this.chatUserRepositiry.save(
+        await this.chatUserRepositiry.create(saveDto),
+      );
+    }
+    dto.role == 'admin';
+    return this.chatUserRepositiry.save(
+      await this.chatUserRepositiry.create(saveDto),
     );
   }
 

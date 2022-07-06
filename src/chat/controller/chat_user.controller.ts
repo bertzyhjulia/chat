@@ -20,8 +20,10 @@ import {
 import { ChatService } from '../service/chat.service';
 import { ChatUserService } from '../service/chat_user.service';
 import { Patch } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('chat_user')
+@ApiBearerAuth('access-token')
 export class ChatUserController {
   constructor(
     private readonly chatUserService: ChatUserService,

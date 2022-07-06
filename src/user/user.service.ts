@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { from, map, Observable, switchMap } from 'rxjs';
+import { from, Observable } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { AuthService } from 'src/auth/auth.service';
 import { Not, Repository } from 'typeorm';
 import { UserEntity } from './model/user.entity';
@@ -71,6 +72,10 @@ export class UserService {
   }
   findOne(id: number): Observable<UserEntity> {
     return from(this.userRepository.findOneBy({ id }));
+  }
+
+  findOneUser(id: number) {
+    return this.userRepository.findOneBy({ id });
   }
   findOneFiend(id: number) {
     return this.userRepository.findOneBy({ id });

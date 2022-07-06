@@ -7,11 +7,13 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { CreateReactionDto } from '../model/dto/createReaction.dto';
 import { ReactionService } from '../service/reaction.service';
 
 @Controller('reaction')
+@ApiBearerAuth('access-token')
 export class ReactionController {
   constructor(private readonly reactionService: ReactionService) {}
 

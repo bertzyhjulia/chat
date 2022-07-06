@@ -24,6 +24,7 @@ import { UserService } from './user.service';
 import { CreateUserDto, EditUserDto, LoginUserDto } from './user.dto';
 import { LocalAuthGuard } from 'src/auth/guard/local-auth.guard';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 export const storage = {
   storage: diskStorage({
@@ -41,6 +42,7 @@ export const storage = {
 export class UserController {
   constructor(private userService: UserService) {}
 
+  @ApiBearerAuth('access-token')
   @Post('clientAdd')
   @UseInterceptors(FileInterceptor('avatar', storage))
   async uploadFile(
@@ -57,6 +59,7 @@ export class UserController {
     return this.userService.create(createDto);
   }
 
+  @ApiBearerAuth('access-token')
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Body() req: LoginUserDto) {
@@ -71,6 +74,7 @@ export class UserController {
     );
   }
 
+  @ApiBearerAuth('access-token')
   @UseGuards(JwtAuthGuard)
   @Get('/profile')
   findAll(@Request() req) {
@@ -83,17 +87,14 @@ export class UserController {
     });
   }
 
-  @Get('')
-  findAllUser() {
-    return this.userService.findAll(2);
-  }
-
+  @ApiBearerAuth('access-token')
   @UseGuards(JwtAuthGuard)
   @Delete('/deleteUser:id')
   async deleteClient(@Param('id') id: string) {
     return await this.userService.delete(id);
   }
 
+  @ApiBearerAuth('access-token')
   @UseGuards(JwtAuthGuard)
   @Patch('updateUser/:id')
   @UseInterceptors(FileInterceptor('avatar', storage))

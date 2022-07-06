@@ -6,10 +6,10 @@ import {
   Param,
   Patch,
   Post,
-  Render,
   Request,
   UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { AbilityService } from 'src/casl/service/ability.service';
 import { UserService } from 'src/user/user.service';
@@ -20,18 +20,13 @@ import {
 import { MessageService } from '../service/message.service';
 
 @Controller('message')
+@ApiBearerAuth('access-token')
 export class MessageController {
   constructor(
     private readonly messageService: MessageService,
     private readonly userService: UserService,
     private readonly adilityService: AbilityService,
   ) {}
-
-  @Get('')
-  @Render('index')
-  Home() {
-    return;
-  }
 
   @UseGuards(JwtAuthGuard)
   @Post('create')
